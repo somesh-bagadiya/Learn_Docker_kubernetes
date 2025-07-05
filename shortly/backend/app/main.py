@@ -126,6 +126,61 @@ def shorten_url(request: URLRequest):
         short_code=short_code
     )
 
+# Health check endpoint for container orchestration
+@app.get("/health")
+def health_check():
+    """Detailed health check for monitoring systems."""
+    try:
+        redis_status = "healthy" if redis_client else "unhealthy"
+        
+        health_data = {
+            "status": "healthy" if redis_client else "unhealthy",
+            "redis": redis_status,
+            "version": "1.0.0"
+        }
+        
+        if redis_client:
+            try:
+                redis_client.ping()
+                health_data["redis_ping"] = "ok"
+            except Exception as e:
+                health_data["redis_ping"] = "failed"
+                health_data["status"] = "unhealthy"
+                health_data["redis_error"] = str(e)
+        
+        # Always return the health data as JSON
+        return health_data
+        
+    except Exception as e:
+        # If anything goes wrong, return a simple error response
+        return {
+            "status": "unhealthy",
+            "error": str(e),
+            "version": "1.0.0"
+        }
+
+@app.get("/stats/{short_code}")
+def get_url_stats(short_code: str):
+    """Get statistics for a shortened URL."""
+    if not redis_client:
+        raise HTTPException(status_code=503, detail="Redis connection not available")
+    
+    try:
+        stats = redis_client.hgetall(f"url:{short_code}")
+        if not stats:
+            raise HTTPException(status_code=404, detail="Short code not found")
+        
+        return {
+            "short_code": short_code,
+            "original_url": stats.get("original_url"),
+            "created_at": int(stats.get("created_at", 0)),
+            "clicks": int(stats.get("clicks", 0))
+        }
+    except Exception as e:
+        if "not found" in str(e):
+            raise
+        raise HTTPException(status_code=500, detail=f"Failed to retrieve stats: {str(e)}")
+
 @app.get("/{short_code}")
 def redirect_to_url(short_code: str):
     """Redirect to the original URL using the short code."""
@@ -151,54 +206,4 @@ def redirect_to_url(short_code: str):
     except Exception as e:
         if "not found" in str(e):
             raise
-        raise HTTPException(status_code=500, detail=f"Failed to retrieve URL: {str(e)}")
-
-@app.get("/stats/{short_code}")
-def get_url_stats(short_code: str):
-    """Get statistics for a shortened URL."""
-    if not redis_client:
-        raise HTTPException(status_code=503, detail="Redis connection not available")
-    
-    try:
-        stats = redis_client.hgetall(f"url:{short_code}")
-        if not stats:
-            raise HTTPException(status_code=404, detail="Short code not found")
-        
-        return {
-            "short_code": short_code,
-            "original_url": stats.get("original_url"),
-            "created_at": int(stats.get("created_at", 0)),
-            "clicks": int(stats.get("clicks", 0))
-        }
-    except Exception as e:
-        if "not found" in str(e):
-            raise
-        raise HTTPException(status_code=500, detail=f"Failed to retrieve stats: {str(e)}")
-
-# Health check endpoint for container orchestration
-@app.get("/health")
-def health_check():
-    """Detailed health check for monitoring systems."""
-    redis_status = "healthy" if redis_client else "unhealthy"
-    
-    health_data = {
-        "status": "healthy" if redis_client else "unhealthy",
-        "redis": redis_status,
-        "version": "1.0.0"
-    }
-    
-    if redis_client:
-        try:
-            redis_client.ping()
-            health_data["redis_ping"] = "ok"
-        except:
-            health_data["redis_ping"] = "failed"
-            health_data["status"] = "unhealthy"
-    
-    status_code = 200 if health_data["status"] == "healthy" else 503
-    
-    # Return proper JSON response
-    if health_data["status"] == "healthy":
-        return health_data
-    else:
-        raise HTTPException(status_code=503, detail=health_data) 
+        raise HTTPException(status_code=500, detail=f"Failed to retrieve URL: {str(e)}") 
