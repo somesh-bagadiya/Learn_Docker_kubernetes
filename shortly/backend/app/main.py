@@ -196,8 +196,9 @@ def health_check():
             health_data["status"] = "unhealthy"
     
     status_code = 200 if health_data["status"] == "healthy" else 503
-    return Response(
-        content=str(health_data),
-        status_code=status_code,
-        media_type="application/json"
-    ) 
+    
+    # Return proper JSON response
+    if health_data["status"] == "healthy":
+        return health_data
+    else:
+        raise HTTPException(status_code=503, detail=health_data) 
