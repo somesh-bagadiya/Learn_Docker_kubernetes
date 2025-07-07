@@ -1,5 +1,124 @@
 # =============================================================================
 # DevOps Learning Project - .gitignore
+# Complete Secret Protection & Security
+# =============================================================================
+
+# =============================================================================
+# SECRETS & CREDENTIALS - CRITICAL PROTECTION
+# =============================================================================
+
+# Environment Variables & Configuration
+.env
+.env.*
+.environment
+*.env
+env.sh
+setenv.sh
+
+# AWS Credentials & Configuration
+.aws/
+aws-credentials
+aws-config
+*.pem
+*.key
+*.ppk
+*.p12
+*.pfx
+access-key-*
+secret-key-*
+aws-*.json
+*-credentials.json
+*-key.json
+*-trust-policy.json
+*-policy.json
+
+# Kubernetes Secrets & Configuration
+kubeconfig
+*.kubeconfig
+kube-config
+.kube/config
+*-kubeconfig.yaml
+kubectl-config
+k8s-config
+cluster-config.yaml
+*-secrets.yaml
+*-secret.yaml
+kubectl.exe
+kubectl
+
+# Terraform Sensitive Files
+terraform.tfstate
+terraform.tfstate.backup
+terraform.tfstate.*
+*.tfvars
+*.tfvars.json
+.terraform/
+.terraform.lock.hcl
+terraform-plan
+tfplan
+*.plan
+*.tfplan
+
+# Docker & Container Secrets
+.docker/config.json
+docker-compose.override.yml
+.dockercfg
+.dockerconfigjson
+
+# SSH Keys & Certificates
+id_rsa
+id_dsa
+id_ecdsa
+id_ed25519
+*.pem
+*.key
+*.crt
+*.csr
+*.p12
+*.pfx
+*.jks
+ssh_host_*
+known_hosts
+authorized_keys
+shortly-key
+shortly-key.pub
+*-key
+*-key.pub
+
+# Generic Secret Files
+secrets/
+credentials/
+*.secret
+*.secrets
+*-secret.*
+*-secrets.*
+config/secrets.yaml
+config/secrets.json
+vault.yml
+vault.yaml
+
+# Database Credentials
+database.yml
+database.yaml
+db-config.*
+*-database-*
+mysql-*
+postgres-*
+redis.conf
+
+# API Keys & Tokens
+api-key*
+apikey*
+*-api-key*
+*-token*
+*-access-token*
+bearer-token*
+jwt-secret*
+oauth-*
+client-secret*
+
+# =============================================================================
+# LANGUAGE & FRAMEWORK SPECIFIC
 # =============================================================================
 
 # Python
@@ -24,6 +143,11 @@ wheels/
 .installed.cfg
 *.egg
 MANIFEST
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+.nox/
 
 # Virtual Environments
 venv/
@@ -32,23 +156,8 @@ ENV/
 env.bak/
 venv.bak/
 .venv/
-
-# PyCharm
-.idea/
-
-# VS Code
-.vscode/
-*.code-workspace
-
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# pytest
-.pytest_cache/
-.coverage
-htmlcov/
-.tox/
-.nox/
+virtualenv/
+.virtualenv/
 
 # Node.js & React
 node_modules/
@@ -57,47 +166,86 @@ yarn-debug.log*
 yarn-error.log*
 .npm
 .yarn-integrity
+.pnp
+.pnp.js
+package-lock.json
+yarn.lock
 
-# React Build
+# React Build & Development
 build/
 dist/
+.next/
+out/
+.nuxt/
+.cache/
 
-# Environment Variables
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+# =============================================================================
+# DEVELOPMENT TOOLS & EDITORS
+# =============================================================================
 
-# Docker
+# IDEs & Editors
+.idea/
+.vscode/
+*.code-workspace
+*.sublime-project
+*.sublime-workspace
+.vim/
+.nvim/
+
+# JetBrains
+*.iml
+*.ipr
+*.iws
+.idea_modules/
+
+# =============================================================================
+# INFRASTRUCTURE & DEPLOYMENT FILES
+# =============================================================================
+
+# Container Runtime
 .dockerignore
+docker-compose.override.yml
+Dockerfile.dev
+Dockerfile.local
 
-# AWS & Cloud
-.aws/
-*.pem
-*.key
-terraform.tfstate
-terraform.tfstate.backup
-.terraform/
-*.tfvars
+# Kubernetes Development
+*-dev.yaml
+*-local.yaml
+*-test.yaml
+helm-values-*.yaml
+kustomization-*.yaml
 
-# Kubernetes
-kubeconfig
-*.kubeconfig
+# Monitoring & Logging
+prometheus.yml
+grafana.ini
+alertmanager.yml
+*.monitoring
 
-# Logs
+# Load Testing
+k6-results/
+jmeter-results/
+load-test-results/
+
+# =============================================================================
+# LOGS & TEMPORARY FILES
+# =============================================================================
+
+# Application Logs
 *.log
-logs/
 *.log.*
+logs/
+log/
+*.out
+application.log
+error.log
+access.log
+debug.log
 
-# OS Generated Files
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
+# System Logs
+syslog
+kern.log
+auth.log
+mail.log
 
 # Temporary Files
 *.tmp
@@ -105,27 +253,202 @@ Thumbs.db
 *.swp
 *.swo
 *~
+.tmp/
+temp/
 
-# Database
+# Backup Files
+*.bak
+*.backup
+*.old
+*~
+.backup/
+backups/
+
+# =============================================================================
+# DATABASES & DATA
+# =============================================================================
+
+# Database Files
 *.sqlite3
+*.sqlite
 *.db
+*.dbf
+*.mdb
 redis-data/
+postgres-data/
+mysql-data/
+mongodb-data/
 
-# Secrets & Credentials
-secrets/
-credentials/
-*.secret
-config/secrets.yaml
+# Data Files
+data/
+*.csv
+*.xlsx
+*.json.bak
+dump.sql
+*.dump
 
-# Testing
-.coverage
+# =============================================================================
+# CLOUD & DEPLOYMENT SPECIFIC
+# =============================================================================
+
+# AWS Specific
+.elasticbeanstalk/
+*.zip
+.ebextensions/
+cloudformation-templates/
+sam-deployment/
+
+# Google Cloud
+.gcloudignore
+gcloud-service-key.json
+service-account-*.json
+
+# Azure
+.azure/
+azure-pipelines.yml
+
+# CI/CD
+.github/workflows/secrets.yml
+.gitlab-ci-local/
+jenkins/secrets/
+.circleci/config-local.yml
+
+# Helm Charts
+charts/*/charts/
+charts/*/requirements.lock
+charts/*/values-*.yaml
+
+# =============================================================================
+# OPERATING SYSTEM FILES
+# =============================================================================
+
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+.DocumentRevisions-V100
+.fseventsd
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# =============================================================================
+# TESTING & COVERAGE
+# =============================================================================
+
+# Test Results
+test-results/
 coverage/
 .nyc_output
+.coverage
+htmlcov/
+junit.xml
+coverage.xml
+*.cover
+.hypothesis/
 
-# Editor Files
-*.sublime-project
-*.sublime-workspace
+# Performance Testing
+*.prof
+*.trace
+benchmark-results/
+
+# =============================================================================
+# SECURITY SCANNING & COMPLIANCE
+# =============================================================================
+
+# Security Scan Results
+security-scan-results/
+vulnerability-reports/
+*.sarif
+trivy-results.json
+checkov-results.json
+terrascan-results.json
+
+# Compliance Reports
+compliance-reports/
+audit-logs/
+*.compliance
+
+# =============================================================================
+# LOCAL DEVELOPMENT OVERRIDES
+# =============================================================================
 
 # Local Development
 .local/
-local_settings.py 
+local/
+local_settings.py
+local-config.*
+dev-config.*
+override.*
+
+# Personal Notes & Documentation
+TODO.md
+NOTES.md
+personal-notes/
+scratch/
+
+# =============================================================================
+# PACKAGE MANAGERS & DEPENDENCIES
+# =============================================================================
+
+# Go
+vendor/
+go.sum
+
+# Rust
+target/
+Cargo.lock
+
+# Java
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+target/
+.mvn/
+
+# Ruby
+.bundle/
+vendor/bundle/
+Gemfile.lock
+
+# =============================================================================
+# CUSTOM PROJECT EXCLUSIONS
+# =============================================================================
+
+# Shortly Application Specific
+shortly-backup/
+production-data/
+ssl-certificates/
+domain-verification/
+
+# Learning Materials (keep documentation, exclude sensitive)
+interview-notes-private/
+salary-negotiations/
+company-specific-notes/ 
