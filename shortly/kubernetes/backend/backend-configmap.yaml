@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-config
+  namespace: shortly
+  labels:
+    app: shortly-backend
+    component: api
+data:
+  REDIS_HOST: "redis"
+  REDIS_PORT: "6379"
+  REDIS_DB: "0"
+  LOG_LEVEL: "INFO"
+  BASE_URL: "https://shortly-somesh.duckdns.org"
+  CORS_ORIGINS: "https://shortly-somesh.duckdns.org,http://localhost:3000" 

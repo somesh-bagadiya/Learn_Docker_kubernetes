@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  namespace: shortly
+  labels:
+    app: shortly-backend
+    component: api
+spec:
+  selector:
+    app: shortly-backend
+  ports:
+  - port: 8000
+    targetPort: 8000
+    protocol: TCP
+    name: http
+  type: ClusterIP  # Internal access only 

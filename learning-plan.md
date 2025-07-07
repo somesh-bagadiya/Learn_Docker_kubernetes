@@ -6,6 +6,8 @@
 3.  **Documentation-first approach.** We create comprehensive, detailed documentation that teaches from scratch, assuming zero prior knowledge.
 4.  **Concept + Hands-on.** Every tool and concept will be explained theoretically first, then immediately applied practically.
 5.  **Absolute path clarity.** All file and directory references will specify exact paths to avoid confusion.
+6.  **Update, don't append.** This document will be updated to reflect current status, not appended to, to avoid redundancy and maintain clarity.
+7.  **Preserve detailed information.** When updating completed phases, maintain comprehensive details rather than summarizing into single bullets. Update with new information while preserving the learning journey and technical specifics.
 
 ---
 
@@ -26,6 +28,8 @@ Learn_Docker_kubernetes/                    # Repository root
 │   ├── 05-monitoring-logging.md
 │   ├── 06-troubleshooting.md
 │   ├── 07-best-practices.md
+│   ├── 08-interview-preparation.md
+│   ├── 09-terraform-fundamentals.md
 │   └── README.md
 ├── shortly/                               # Project root
 │   ├── backend/
@@ -184,43 +188,34 @@ shortly/
 ---
 ## The Application: "Shortly" - A URL Shortener
 
-*   **Backend:** FastAPI (Python) - Will handle the logic of creating short links and redirecting users.
-*   **Frontend:** React (JavaScript) - A simple, clean UI to input a long URL and get the shortened version.
-*   **Database:** Redis - A fast, in-memory key-value store perfect for mapping short codes to long URLs.
+*   **Backend:** FastAPI (Python) - Handles the logic of creating short links and redirecting users.
+*   **Frontend:** React (JavaScript) - Clean UI to input a long URL and get the shortened version.
+*   **Database:** Redis - Fast, in-memory key-value store for mapping short codes to long URLs.
 
-**Note:** The application code itself (FastAPI and React) will be kept intentionally simple. They serve as the "cargo" for our main learning objective: mastering the enterprise-grade DevOps tools and practices required to ship and maintain software in the cloud.
+**Note:** The application code is kept intentionally simple to focus on mastering enterprise-grade DevOps tools and practices.
 
 ### **How the Shortly App Works:**
 
 1. **User Flow:**
-   - User enters a long URL (e.g., `https://example.com/very/long/path`) in the React frontend
-   - Frontend sends a POST request to FastAPI backend `/shorten` endpoint
-   - Backend generates a short code (e.g., `abc123`) and stores the mapping in Redis
-   - Backend returns the shortened URL (e.g., `https://shortly.com/abc123`)
+   - User enters a long URL in the React frontend
+   - Frontend sends POST request to FastAPI backend `/shorten` endpoint
+   - Backend generates a short code and stores the mapping in Redis
+   - Backend returns the shortened URL
    - When someone visits the short URL, backend looks up the original URL in Redis and redirects
 
 2. **Technical Architecture:**
    ```
    [React Frontend] → [FastAPI Backend] → [Redis Database]
         │                    │                   │
-        │                    │                   │
    - URL input form     - POST /shorten      - Key-value store
    - Display results    - GET /{short_code}  - short_code → long_url
    - Handle redirects   - URL validation     - Fast lookups
    ```
 
-3. **API Endpoints We'll Build:**
+3. **API Endpoints:**
    - `POST /shorten` - Create a short URL from a long URL
    - `GET /{short_code}` - Redirect to the original URL
-   - `GET /` - Health check endpoint
-   - `GET /stats/{short_code}` - (Optional) Get click statistics
-
-4. **Database Schema:**
-   ```
-   Redis Key-Value Pairs:
-   "abc123" → "https://example.com/very/long/path"
-   "def456" → "https://another-example.com/path"
-   ```
+   - `GET /health` - Health check endpoint
 
 ---
 ## The Article: A Content Creation Plan
@@ -231,392 +226,217 @@ The process remains the same: for each project, we will frame the goal, collect 
 
 ## Progress Tracking
 
-### ✅ **Completed Tasks**
-- [x] **Learning Plan Setup** - Created comprehensive roadmap with absolute path clarity
-- [x] **Documentation Structure** - Established `/Learn_Docker_kubernetes/docs/` with clear organization
-- [x] **Project 1 (Backend API)** - ✅ COMPLETED
-  - [x] FastAPI application with all endpoints (`/`, `/shorten`, `/{short_code}`)
-  - [x] Redis integration for URL storage and retrieval
-  - [x] Comprehensive test suite with pytest (100% coverage)
-  - [x] Production-ready multi-stage Dockerfile with security best practices
-  - [x] Error handling and validation
-  - [x] Environment variable configuration
-- [x] **Docker Deep Dive Documentation** - Created comprehensive Docker guide (`00-docker-deep-dive.md`)
-- [x] **Project 2 (Frontend UI)** - ✅ COMPLETED
-  - [x] React application with modern UI components
-  - [x] URL input form with validation and error handling  
-  - [x] API communication with FastAPI backend
-  - [x] Results display with copy-to-clipboard functionality
-  - [x] Comprehensive test suite with React Testing Library
-  - [x] Production-ready multi-stage Dockerfile with Nginx
-  - [x] ESLint configuration for code quality
-- [x] **Project 3 (Docker Compose Orchestration)** - ✅ COMPLETED
-  - [x] Multi-service Docker Compose configuration
-  - [x] Service discovery and networking setup
-  - [x] Environment variable management
-  - [x] Data persistence with Redis volumes
-  - [x] Dependency management (redis → backend → frontend)
-  - [x] Production troubleshooting and debugging
-  - [x] End-to-end integration testing
-- [x] **Documentation Updates** - ✅ COMPLETED
-  - [x] Updated `01-docker-fundamentals.md` with complete project details
-  - [x] Enhanced `00-docker-deep-dive.md` with real-world troubleshooting
-  - [x] Documented all production issues and solutions
-  - [x] Added Docker Compose orchestration patterns
-
-### 🎉 **Phase 1 Complete: Full-Stack Containerization (Local Development)**
+### ✅ **Phase 1: Full-Stack Containerization (Local Development) - COMPLETED**
 
 **Status:** ✅ **ALL PROJECTS COMPLETED SUCCESSFULLY**
 
-**What We Accomplished:**
-- Built a complete URL shortener application (Shortly)
-- Containerized all components (FastAPI, React, Redis)
-- Implemented production-ready Docker configurations
-- Mastered Docker Compose orchestration
-- Solved real-world container deployment issues
-- Created comprehensive documentation for enterprise use
+**Completed Projects:**
+- [x] **Project 1: Backend API (FastAPI + Redis)** - Complete with tests and containerization
+- [x] **Project 2: Frontend UI (React)** - Modern UI with comprehensive testing
+- [x] **Project 3: Docker Compose Orchestration** - Multi-service local deployment
 
-**Key DevOps Skills Demonstrated:**
-- Container debugging and troubleshooting
-- Multi-stage Docker builds with security best practices
-- Service discovery and networking
-- Configuration management with environment variables
-- Progressive problem-solving methodologies
-- Production readiness patterns
-
-**Complete Project Structure:**
-```
-/Learn_Docker_kubernetes/
-├── docs/
-│   ├── README.md                    ✅ Documentation overview
-│   ├── 00-docker-deep-dive.md      ✅ Comprehensive Docker guide with troubleshooting
-│   └── 01-docker-fundamentals.md   ✅ Complete containerization guide with all projects
-├── shortly/
-│   ├── backend/
-│   │   ├── app/
-│   │   │   └── main.py             ✅ Complete FastAPI application
-│   │   ├── tests/
-│   │   │   └── test_main.py        ✅ Full test suite (100% coverage)
-│   │   ├── Dockerfile              ✅ Multi-stage production Dockerfile
-│   │   └── requirements.txt        ✅ Pinned dependencies
-│   ├── frontend/
-│   │   ├── public/
-│   │   │   └── index.html          ✅ HTML template with modern styling
-│   │   ├── src/
-│   │   │   ├── components/
-│   │   │   │   ├── UrlShortener.js ✅ Main component with full functionality
-│   │   │   │   ├── UrlShortener.css ✅ Modern responsive styling
-│   │   │   │   └── UrlShortener.test.js ✅ Component tests
-│   │   │   ├── App.js              ✅ Main App component
-│   │   │   ├── App.css             ✅ App styling
-│   │   │   ├── App.test.js         ✅ App tests
-│   │   │   └── index.js            ✅ React entry point
-│   │   ├── Dockerfile              ✅ Multi-stage production Dockerfile
-│   │   ├── nginx.conf              ✅ Simplified Nginx configuration
-│   │   ├── package.json            ✅ Dependencies and scripts
-│   │   ├── .eslintrc.js            ✅ Code quality configuration
-│   │   └── .dockerignore           ✅ Build optimization
-│   └── docker-compose.yml          ✅ Complete orchestration configuration
-└── learning-plan.md                ✅ This tracking document
-```
+**Key Achievements:**
+- Complete containerized URL shortener application
+- Production-ready Docker configurations with security best practices
+- Comprehensive documentation and troubleshooting guides
+- Real-world DevOps problem-solving experience
 
 ---
 
-## The Projects: A Hands-On Journey
+### ✅ **Phase 2: AWS Cloud Deployment - COMPLETED**
 
-### **✅ Phase 1: Full-Stack Containerization (Local Development) - COMPLETED**
+**Status:** ✅ **SUCCESSFULLY DEPLOYED TO PRODUCTION**
 
-*   **✅ Project 1: The Backend API (FastAPI + Redis) - COMPLETED**
-    *   **Goal:** Build and containerize the core API service for the Shortly URL shortener.
-    *   **✅ Application Development - COMPLETED:**
-        1.  ✅ **Health Check Endpoint:** `GET /` endpoint returns "Shortly Backend is running!"
-        2.  ✅ **URL Shortening Logic:** `POST /shorten` endpoint:
-            - Accepts a long URL in the request body
-            - Generates a random short code (6-character alphanumeric)
-            - Stores the mapping in Redis (short_code → long_url)
-            - Returns the shortened URL
-        3.  ✅ **URL Redirect Logic:** `GET /{short_code}` endpoint:
-            - Looks up the short code in Redis
-            - Returns a redirect response to the original URL
-            - Handles cases where short code doesn't exist
-        4.  ✅ **Redis Integration:** Connected FastAPI to Redis for data storage and retrieval
-        5.  ✅ **Testing:** Complete unit tests for all endpoints using `pytest` (100% coverage)
-    *   **✅ Containerization - COMPLETED:** Multi-stage `Dockerfile` with security best practices
-    *   **✅ Documentation - COMPLETED:** Added to `01-docker-fundamentals.md`
+**Completed Projects:**
+- [x] **Project 4: EC2 "Lift and Shift" Deployment** - Live production application
 
-*   **✅ Project 2: The Frontend UI (React) - COMPLETED**
-    *   **Goal:** Build and containerize the user-facing web application for the Shortly URL shortener.
-    *   **✅ Application Development - COMPLETED:**
-        1.  ✅ **URL Input Form:** React component with:
-            - Text input field for long URLs with validation
-            - Submit button to shorten the URL with loading states
-            - Form validation and error messaging
-        2.  ✅ **API Communication:** Implemented functions to:
-            - Send POST requests to `/shorten` endpoint
-            - Handle success and error responses gracefully
-            - Display the shortened URL to the user
-        3.  ✅ **Results Display:** Show the shortened URL with:
-            - Copy-to-clipboard functionality with visual feedback
-            - Test button to open redirect in new tab
-            - Modern glassmorphism UI design
-        4.  ✅ **Error Handling:** Handle network errors and invalid URLs gracefully
-    *   **✅ Containerization - COMPLETED:** Multi-stage `Dockerfile` using Nginx with security best practices
-    *   **✅ Documentation - COMPLETED:** Added to `01-docker-fundamentals.md`
+**🎉 Production Application:**
+- **Live URL:** https://shortly-somesh.duckdns.org
+- **Infrastructure:** AWS EC2 with security groups and key pairs
+- **Security:** SSL/TLS certificates, firewall configuration, reverse proxy
+- **Domain:** DuckDNS integration with DNS resolution
+- **Monitoring:** Health checks, automated backups, log rotation
+- **Architecture:** Nginx → Docker Compose → Multi-container application
 
-*   **✅ Project 3: Local Orchestration (Docker Compose) - COMPLETED**
-    *   **Goal:** Run the complete Shortly URL shortener application locally.
-    *   **✅ Application Integration - COMPLETED:**
-        1.  ✅ **Service Networking:** Configured Docker Compose to connect:
-            - React frontend (port 3000) → FastAPI backend (port 8000)
-            - FastAPI backend → Redis database (port 6379)
-        2.  ✅ **Environment Configuration:** Set up environment variables for:
-            - Redis connection parameters (REDIS_HOST, REDIS_PORT, REDIS_DB)
-            - API base URL for frontend
-            - CORS settings for cross-origin requests
-        3.  ✅ **Data Persistence:** Configured Redis volume for data persistence
-        4.  ✅ **End-to-End Testing:** Verified the complete flow:
-            - Enter URL in React frontend ✅
-            - Create short URL via FastAPI backend ✅
-            - Test redirect functionality ✅
-            - Verify data is stored in Redis ✅
-        5.  ✅ **Production Troubleshooting:** Solved real-world issues:
-            - Nginx permission errors with non-root users ✅
-            - Docker build cache corruption ✅
-            - Complex regex configuration failures ✅
-            - Service discovery and environment variable mismatches ✅
-    *   **✅ Documentation - COMPLETED:** Complete guide in `01-docker-fundamentals.md`
+**Key DevOps Skills Mastered:**
+- Cloud infrastructure provisioning and management
+- Production deployment strategies and security hardening
+- SSL certificate management and automation
+- Reverse proxy configuration and load balancing
+- System monitoring, logging, and backup strategies
+- Real-world troubleshooting and problem-solving
 
-**🎉 Phase 1 Achievement Summary:**
-- **Complete containerized application** running locally
-- **Production-ready configurations** with security best practices
-- **Comprehensive documentation** with troubleshooting guides
-- **Real-world DevOps skills** demonstrated through problem-solving
-- **Enterprise-grade patterns** implemented and documented
+**Updated Documentation:**
+- [x] **03-aws-infrastructure.md** - Complete AWS deployment guide
+- [x] **08-interview-preparation.md** - TCS DevOps Engineer interview preparation
 
 ---
 
+### ✅ **Phase 3: Infrastructure as Code (Terraform) - COMPLETED**
+
+**Status:** ✅ **TERRAFORM AUTOMATION SUCCESSFULLY IMPLEMENTED**
+
+**Completed Projects:**
+- [x] **Project 5: Infrastructure as Code (Terraform)** - Complete automation of AWS infrastructure
+
+**🎉 Terraform Infrastructure Automation:**
+- **Infrastructure as Code:** Complete Terraform configuration for AWS resources
+- **Automated Provisioning:** EC2, Security Groups, Key Pairs, Elastic IP via `terraform apply`
+- **State Management:** Terraform state tracking and resource lifecycle management
+- **Version Control:** Infrastructure configurations stored in Git
+- **Reproducible Deployments:** Identical infrastructure creation in 18 seconds
+- **Complete Automation:** End-to-end deployment from infrastructure to running application
+
+**Key DevOps Skills Mastered:**
+- **Terraform Fundamentals:** HCL syntax, providers, resources, variables, outputs
+- **AWS Provider:** EC2, Security Groups, Key Pairs, Elastic IP management
+- **Infrastructure Automation:** Declarative infrastructure definition and management
+- **State Management:** Understanding Terraform state files and resource tracking
+- **Security Configuration:** Automated security group rules and SSH key management
+- **User Data Scripts:** Automated server configuration and application deployment
+- **Troubleshooting:** Infrastructure debugging and problem resolution
+
+**Technical Achievements:**
+- **Complete Terraform Project Structure:** main.tf, variables.tf, outputs.tf, user-data.sh
+- **Automated Application Deployment:** Git clone, Docker Compose, container orchestration
+- **Network Security:** Proper port configuration for SSH, HTTP, HTTPS, and application ports
+- **Resource Tagging:** Consistent resource identification and management
+- **Infrastructure Updates:** In-place security group modifications without downtime
+
+**Updated Documentation:**
+- [x] **09-terraform-fundamentals.md** - Complete Terraform learning guide
+- [x] **10-terraform-interview-preparation.md** - Comprehensive IaC interview preparation
+- [x] **03-aws-infrastructure.md** - Updated with Terraform automation procedures
+
 ---
 
-## 🚀 **CURRENT STATUS: Ready for Phase 2 - Cloud Deployment**
+## 🎯 **CURRENT STATUS: Phase 4 - Kubernetes Container Orchestration**
 
-**✅ Phase 1 Complete:** Full-stack containerized application running locally
-**🎯 Next Goal:** Deploy to public cloud and scale with enterprise tools
+**✅ Completed:** Local containerization + AWS cloud deployment + Infrastructure as Code + Terraform automation
+**🎯 Current Goal:** Kubernetes orchestration and enterprise-grade container management
 
 ---
 
-### **🌐 Phase 2: From Localhost to the Public Cloud (AWS)**
+### **🚀 Phase 4: Kubernetes & Container Orchestration - IN PROGRESS**
 
-*   **🎯 Project 4: "Lift and Shift" Deployment (EC2 + Docker Compose)**
-    *   **Goal:** Deploy the complete Shortly URL shortener application to the public internet.
+**🎯 Current Priority: Kubernetes Fundamentals and EKS Deployment**
+
+*   **Project 6: Kubernetes Deployment (EKS) - CURRENT FOCUS**
+    *   **Goal:** Deploy Shortly to production-grade Kubernetes cluster on AWS EKS
     *   **Learning Objectives:**
-        - AWS EC2 fundamentals and security groups
-        - Public cloud networking concepts
-        - Domain management and DNS configuration
-        - Production deployment strategies
-        - Cloud security best practices
-    *   **Cloud Deployment Tasks:**
-        1.  **Provision AWS EC2:** Launch a virtual server on AWS with appropriate security groups
-        2.  **Configure Security:** Set up firewall rules to allow:
-            - HTTP/HTTPS traffic (ports 80/443) for the React frontend
-            - SSH access (port 22) for server management
-        3.  **Deploy Shortly App:** 
-            - SSH into the EC2 instance
-            - Install Docker and Docker Compose
-            - Copy our Shortly project files to the server
-            - Run `docker-compose up -d` to start all services
-            - Configure domain/subdomain to point to the server
-        4.  **Test End-to-End:** Verify the Shortly app works from the internet:
-            - Access the React frontend via public IP/domain
-            - Create shortened URLs and test redirects
-            - Confirm Redis data persistence
-        5.  **Production Hardening:** Implement security best practices:
-            - Configure SSL/TLS certificates
-            - Set up monitoring and logging
-            - Implement backup strategies
-    *   **Documentation:** `03-aws-infrastructure.md` - "Deploying the Shortly URL Shortener to AWS EC2"
+        - Kubernetes fundamentals and container orchestration concepts
+        - AWS EKS managed service integration and cluster management
+        - Container registry management with Amazon ECR
+        - Kubernetes manifests and resource management (YAML configurations)
+        - Auto-scaling, resource optimization, and production readiness
+        - Kubernetes networking, services, and ingress controllers
+    *   **Phase 4 Implementation Plan:**
+        1.  **Kubernetes Fundamentals (Week 1):**
+            - Learn core Kubernetes concepts: Pods, Deployments, Services, ConfigMaps
+            - Install kubectl and set up local development environment
+            - Create basic Kubernetes manifests for Shortly application
+            - Understand Kubernetes networking and service discovery
+        2.  **Container Registry Setup (Week 1):**
+            - Set up Amazon ECR repositories for backend, frontend, and Redis
+            - Build and tag Docker images with proper versioning
+            - Push images to ECR and configure authentication
+            - Implement image scanning and security policies
+        3.  **EKS Cluster Provisioning (Week 2):**
+            - Use Terraform to create EKS cluster with managed node groups
+            - Configure VPC, subnets, and security groups for EKS
+            - Set up IAM roles and policies for cluster access
+            - Install and configure AWS Load Balancer Controller
+        4.  **Application Deployment (Week 2):**
+            - Deploy Shortly application to EKS using Kubernetes manifests
+            - Configure persistent storage for Redis using EBS volumes
+            - Set up ConfigMaps and Secrets for application configuration
+            - Implement health checks (liveness, readiness, startup probes)
+        5.  **Production Features (Week 3):**
+            - Implement Horizontal Pod Autoscaler for automatic scaling
+            - Configure resource requests and limits for optimal performance
+            - Set up Ingress controller for external access and SSL termination
+            - Implement rolling updates and deployment strategies
+        6.  **Monitoring & Observability (Week 3):**
+            - Deploy Prometheus for metrics collection
+            - Set up Grafana for visualization dashboards
+            - Configure centralized logging with AWS CloudWatch
+            - Implement alerting and notification systems
+    *   **Success Criteria:**
+        - Shortly application running on EKS with high availability
+        - Auto-scaling based on CPU/memory metrics
+        - Production-grade monitoring and logging
+        - SSL-terminated external access via ALB Ingress
+        - Complete infrastructure automation with Terraform
+    *   **Documentation:** Create `02-kubernetes-basics.md`, `11-kubernetes-interview-preparation.md`, and update `05-monitoring-logging.md`
 
-*   **🎯 Project 5: Infrastructure as Code (Terraform)**
-    *   **Goal:** Automate the AWS infrastructure provisioning for the Shortly application.
+*   **Project 7: CI/CD Pipeline (Jenkins) - FUTURE**
+    *   **Goal:** Fully automated DevOps pipeline for Shortly application
+    *   **Timeline:** After Kubernetes mastery (Phase 5)
     *   **Learning Objectives:**
-        - Infrastructure as Code (IaC) principles
-        - Terraform fundamentals and best practices
-        - AWS resource management via code
-        - Version-controlled infrastructure
-        - Automated provisioning and teardown
-    *   **Infrastructure Automation Tasks:**
-        1.  **Define Infrastructure:** Write Terraform scripts to create:
-            - EC2 instance with appropriate size and AMI
-            - Security groups with correct port configurations
-            - Key pairs for SSH access
-            - Elastic IP for consistent public IP address
-        2.  **Automate Deployment:** Create scripts to:
-            - Provision infrastructure with `terraform apply`
-            - Deploy the Shortly app automatically
-            - Tear down everything with `terraform destroy`
-        3.  **Version Control:** Store all infrastructure code in Git
-        4.  **Documentation:** Create deployment runbooks and troubleshooting guides
-        5.  **Advanced Patterns:** Implement:
-            - Terraform modules for reusability
-            - State management and remote backends
-            - Environment-specific configurations
-    *   **Documentation:** `03-aws-infrastructure.md` - "Automating Shortly App Infrastructure with Terraform"
-
-*   **🎯 Project 6: Managed Kubernetes on AWS (EKS)**
-    *   **Goal:** Deploy the Shortly URL shortener to a scalable, production-grade Kubernetes cluster.
-    *   **Learning Objectives:**
-        - Kubernetes fundamentals and container orchestration
-        - AWS EKS managed service and IAM integration
-        - Container registry management (ECR)
-        - Kubernetes manifests and resource management
-        - Auto-scaling and resource optimization
-        - Production monitoring and observability
-    *   **Kubernetes Deployment Tasks:**
-        1.  **Provision EKS Cluster:** Use Terraform to create:
-            - Amazon EKS cluster with worker nodes
-            - Amazon ECR repositories for our container images
-            - IAM roles and policies for secure access
-        2.  **Prepare Container Images:** 
-            - Build and tag Shortly app images (backend, frontend)
-            - Push images to Amazon ECR
-            - Update image references in Kubernetes manifests
-        3.  **Deploy to Kubernetes:** Create and apply:
-            - Deployment manifests for FastAPI backend and React frontend
-            - Service manifests for internal communication
-            - Ingress controller for external access
-            - ConfigMaps for environment variables
-            - Secrets for sensitive data (Redis passwords, etc.)
-        4.  **Configure Scaling:** Set up:
-            - Horizontal Pod Autoscaler for automatic scaling
-            - Resource requests and limits for optimal performance
-            - Health checks (liveness and readiness probes)
-        5.  **Add Monitoring:** Deploy:
-            - Prometheus for metrics collection
-            - Grafana for visualization dashboards
-            - AWS CloudWatch for centralized logging
-        6.  **Test Production Readiness:** Verify:
-            - Shortly app works under load
-            - Auto-scaling triggers correctly
-            - Monitoring alerts function properly
-            - Logs are centralized and searchable
-    *   **Documentation:** `02-kubernetes-basics.md` + `05-monitoring-logging.md` - "Running Shortly on Production Kubernetes with Monitoring"
+        - CI/CD pipeline design and implementation
+        - Jenkins configuration and pipeline as code
+        - Automated testing and security scanning
+        - GitOps workflow integration with Kubernetes
+    *   **Pipeline Development:**
+        1.  **Jenkins Setup:** Configure Jenkins with:
+            - Docker and Kubernetes plugins
+            - AWS integration for ECR and EKS
+            - GitHub webhook automation
+        2.  **Pipeline Stages:** Create Jenkinsfile with:
+            - Source code checkout and validation
+            - Automated testing (pytest, React tests)
+            - Security scanning with Trivy
+            - Docker image building and ECR push
+            - Kubernetes deployment updates
+            - Smoke testing and verification
+        3.  **Advanced Features:** Implement:
+            - Branch-based deployment strategies
+            - Rollback capabilities
+            - Notification systems
+            - Performance testing integration
+    *   **Documentation:** Create `04-cicd-pipelines.md`
 
 ---
 
-### **Phase 3: End-to-End Automation (Jenkins CI/CD)**
+## 🎯 **NEXT PHASE OPTIONS: Advanced DevOps Specialization**
 
-*   **Project 7: The Cloud-Native CI/CD Pipeline**
-    *   **Goal:** Create a fully automated pipeline that builds, tests, and deploys the Shortly URL shortener to EKS.
-    *   **CI/CD Pipeline Development:**
-        1.  **Setup Jenkins:** 
-            - Launch Jenkins on a dedicated EC2 instance
-            - Install necessary plugins (Docker, Kubernetes, AWS)
-            - Configure AWS IAM permissions for ECR and EKS access
-            - Set up GitHub webhook for automatic triggers
-        2.  **Create the `Jenkinsfile`:** Write a declarative pipeline with stages:
-            - **Source:** Check out Shortly app code from Git repository
-            - **Test Backend:** Run `pytest` tests for FastAPI endpoints
-            - **Test Frontend:** Run React component tests and linting
-            - **Security Scan:** Use tools like `Trivy` to scan for vulnerabilities
-            - **Build Images:** Build Docker images for FastAPI backend and React frontend
-            - **Push to ECR:** Tag and push images to Amazon ECR
-            - **Deploy to EKS:** Update Kubernetes deployments with new image versions
-            - **Smoke Test:** Verify Shortly app endpoints are responding correctly
-            - **Performance Test:** Run basic load tests against the deployed application
-            - **Monitoring Check:** Confirm Prometheus is collecting metrics and Grafana dashboards are updating
-        3.  **Branch Strategy:** Configure different pipeline behaviors:
-            - `main` branch: Full pipeline with deployment to production EKS
-            - `develop` branch: Run tests and build images, deploy to staging environment
-            - Feature branches: Run tests only, no deployment
-        4.  **Notification Setup:** Configure alerts for:
-            - Pipeline failures via email/Slack
-            - Successful deployments
-            - Security scan findings
-        5.  **Troubleshooting Lab:** Practice debugging by:
-            - Intentionally breaking the Shortly app code
-            - Introducing infrastructure issues
-            - Simulating deployment failures
-            - Using `kubectl`, logs, and monitoring to diagnose problems
-    *   **Documentation:** `04-cicd-pipelines.md` - "Automating Shortly App Deployment with Jenkins CI/CD"
+### **Phase 4 Learning Path Options:**
 
-*   **Project 8: Advanced Operations & Maintenance**
-    *   **Goal:** Demonstrate advanced operational skills for maintaining the Shortly URL shortener in production.
-    *   **Production Operations:**
-        1.  **Shell Scripting:** Create automation scripts for:
-            - Database backup and restore procedures for Redis
-            - Log rotation and cleanup for Shortly app containers
-            - Health check scripts that verify all Shortly endpoints
-            - Automated scaling based on URL creation rate
-        2.  **Disaster Recovery:** Implement and test:
-            - Redis data backup to S3 with scheduled snapshots
-            - Full application restore procedures
-            - Database failover scenarios
-            - Cross-region deployment strategies
-        3.  **Performance Optimization:** Use monitoring data to:
-            - Identify slow API endpoints in the Shortly app
-            - Optimize Redis queries and connection pooling
-            - Tune Kubernetes resource requests and limits
-            - Implement caching strategies for frequently accessed URLs
-        4.  **Security Hardening:** Implement:
-            - Network policies to restrict pod-to-pod communication
-            - Pod security policies for the Shortly app containers
-            - Secrets management for Redis passwords and API keys
-            - Regular security scanning and vulnerability remediation
-        5.  **Operational Documentation:** Create:
-            - Runbooks for common Shortly app issues
-            - Troubleshooting guides for deployment problems
-            - Performance tuning playbooks
-            - Security incident response procedures
-        6.  **Chaos Engineering:** Practice resilience by:
-            - Randomly terminating Shortly app pods
-            - Simulating Redis failures
-            - Testing behavior under high load
-            - Validating monitoring and alerting systems
-    *   **Documentation:** `06-troubleshooting.md` + `07-best-practices.md` - "Production Operations for the Shortly URL Shortener"
+**🎯 Option 1: Kubernetes Deployment (EKS) - RECOMMENDED**
+- **Timeline:** 2-3 weeks
+- **Skills:** Container orchestration, EKS, auto-scaling, production Kubernetes
+- **Value:** Highest industry demand, natural progression from Docker
+- **Outcome:** Shortly app running on production Kubernetes cluster
+
+**🔄 Option 2: CI/CD Pipeline (Jenkins/GitHub Actions)**
+- **Timeline:** 1-2 weeks  
+- **Skills:** Automated testing, deployment pipelines, GitOps workflows
+- **Value:** Development workflow automation, team collaboration
+- **Outcome:** Fully automated development-to-production pipeline
+
+**📊 Option 3: Monitoring & Observability**
+- **Timeline:** 1-2 weeks
+- **Skills:** Prometheus, Grafana, logging, alerting, production monitoring
+- **Value:** Production operations and incident response
+- **Outcome:** Complete observability stack for Shortly application
+
+**⚡ Option 4: Quick CI/CD Win (GitHub Actions)**
+- **Timeline:** 2-3 days
+- **Skills:** GitHub Actions, automated testing, Docker builds
+- **Value:** Immediate workflow improvement, quick victory
+- **Outcome:** Automated testing and deployment on every commit
+
+### **Recommended Learning Sequence:**
+1. **Kubernetes (EKS)** - Core container orchestration skills
+2. **CI/CD Pipeline** - Automated workflows and testing
+3. **Monitoring & Observability** - Production operations
+
+### **Key Questions for Phase 4:**
+- Which advanced DevOps skill area interests you most?
+- Do you prefer deep technical challenges (Kubernetes) or workflow automation (CI/CD)?
+- Are you ready for enterprise-grade container orchestration?
+- Would you like a quick win before tackling larger projects?
 
 ---
 
-## 🎯 **IMMEDIATE NEXT STEPS**
-
-### **Phase 2 Kickoff: Cloud Deployment**
-
-**🎯 Current Priority: Project 4 - AWS EC2 "Lift and Shift" Deployment**
-
-**Learning Focus:**
-- Transition from local development to public cloud
-- AWS fundamentals and security concepts
-- Production deployment strategies
-- Cloud networking and domain management
-
-**Recommended Approach:**
-1. **Start with AWS EC2 Setup** - Learn cloud fundamentals before automation
-2. **Manual deployment first** - Understand the process before automating
-3. **Document everything** - Capture real-world issues and solutions
-4. **Progressive complexity** - EC2 → Terraform → Kubernetes
-
-**Preparation Tasks:**
-- [ ] Set up AWS account and configure CLI credentials
-- [ ] Review AWS EC2 and security group concepts
-- [ ] Plan domain/subdomain for public access
-- [ ] Create `03-aws-infrastructure.md` documentation structure
-
-**Success Criteria for Project 4:**
-- Shortly app accessible from public internet
-- All services running on AWS EC2 instance
-- Domain pointing to the application
-- SSL/TLS certificates configured
-- Basic monitoring and logging in place
-- Complete troubleshooting documentation
-
-**Teaching Methodology:**
-- **Theory First:** Explain AWS concepts before hands-on
-- **Step-by-Step:** Detailed instructions with expected outputs
-- **Real-World Context:** Why each step matters in enterprise environments
-- **Problem-Solving:** Document and solve actual deployment issues
-- **Verification:** Multiple ways to confirm everything is working
-
-**Key Questions to Explore:**
-- How does cloud networking differ from local Docker networking?
-- What security considerations are unique to public cloud deployment?
-- How do we manage secrets and environment variables in the cloud?
-- What monitoring is essential for production applications?
-- How do we troubleshoot issues in a cloud environment?
+*This document serves as our single source of truth and will be updated continuously as we progress through each phase.*

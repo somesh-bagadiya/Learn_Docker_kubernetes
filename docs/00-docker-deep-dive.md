@@ -720,6 +720,148 @@ docker exec container-name id
 docker exec --user root container-name chown -R appuser:appuser /app
 ```
 
+### **Real-World Production Issues**
+
+**5. Nginx Permission Errors with Non-Root Users**
+
+**Problem:**
+```
+nginx: [emerg] open() "/run/nginx.pid" failed (13: Permission denied)
+```
+
+**Root Cause:** Nginx running as non-root user cannot write PID file to default location.
+
+**Solution:**
+```dockerfile
+# Method 1: Create writable directories
+RUN mkdir -p /var/run/nginx && \
+    chown -R nginx:nginx /var/run/nginx && \
+    mkdir -p /run && \
+    chown -R nginx:nginx /run
+
+# Method 2: Use custom nginx.conf with different PID location
+# In nginx.conf:
+# pid /tmp/nginx.pid;
+```
+
+**Prevention:** Always test non-root containers thoroughly before production.
+
+**6. Docker Build Cache Corruption**
+
+**Problem:**
+```
+failed to prepare extraction snapshot: parent snapshot does not exist
+```
+
+**Root Cause:** Docker's layer cache becomes corrupted, especially during interrupted builds.
+
+**Diagnostic Commands:**
+```bash
+# Check Docker system status
+docker system df
+docker system events
+
+# Inspect build cache
+docker builder du
+```
+
+**Solution (Progressive):**
+```bash
+# Level 1: Clear build cache only
+docker builder prune -f
+
+# Level 2: Clear all unused resources
+docker system prune -a
+
+# Level 3: Nuclear option - reset everything
+docker-compose down --volumes --remove-orphans
+docker system prune -a --volumes
+docker builder prune -a
+```
+
+**Prevention:** 
+- Use `.dockerignore` to exclude unnecessary files
+- Implement proper CI/CD cache strategies
+- Regular cleanup in development environments
+
+**7. Complex Configuration Syntax Errors**
+
+**Problem:**
+```
+nginx: [emerg] pcre2_compile() failed: missing closing parenthesis
+nginx: [emerg] unknown directive "3,}$"
+```
+
+**Root Cause:** Complex regex patterns in configuration files can be fragile.
+
+**Debugging Approach:**
+```bash
+# Test configuration syntax before building
+docker run --rm -v $(pwd)/nginx.conf:/etc/nginx/conf.d/default.conf \
+  nginx:alpine nginx -t
+
+# Simplify progressively
+# Start with minimal config, add complexity gradually
+```
+
+**Solution Pattern:**
+```nginx
+# ❌ Complex regex (error-prone)
+location ~ ^/(shorten|[a-zA-Z0-9]{3,})$ {
+    proxy_pass http://backend:8000;
+}
+
+# ✅ Simple explicit blocks (reliable)
+location /shorten {
+    proxy_pass http://backend:8000/shorten;
+}
+
+location /api/ {
+    proxy_pass http://backend:8000/;
+}
+
+location / {
+    try_files $uri $uri/ /index.html;
+}
+```
+
+**8. Service Discovery and Environment Variable Mismatches**
+
+**Problem:** Backend can't connect to Redis despite correct Docker Compose setup.
+
+**Diagnostic Commands:**
+```bash
+# Check environment variables inside container
+docker exec backend-container env | grep REDIS
+
+# Test network connectivity
+docker exec backend-container ping redis
+docker exec backend-container nslookup redis
+
+# Check application expectations
+docker exec backend-container cat /app/main.py | grep -A5 "redis"
+```
+
+**Common Mismatches:**
+```yaml
+# Application expects individual variables
+environment:
+  - REDIS_HOST=redis
+  - REDIS_PORT=6379
+  - REDIS_DB=0
+
+# But you provided a URL format
+environment:
+  - REDIS_URL=redis://redis:6379/0  # Won't work!
+```
+
+**Solution:** Always verify how your application code reads configuration:
+```python
+# Check your application code
+REDIS_HOST = os.getenv("REDIS_HOST", "localhost")  # Expects REDIS_HOST
+# Not: redis_url = os.getenv("REDIS_URL")
+```
+
 ### **Debugging Techniques**
 
 **1. Interactive Debugging**
@@ -744,6 +886,252 @@ docker exec container-name ps aux
 
 # Monitor system calls
 docker exec container-name strace -p 1
+```
+
+---
+
+---
+
+## 🎼 Docker Compose Orchestration
+
+### **Multi-Service Application Management**
+
+Docker Compose transforms complex multi-container deployments into simple, declarative configurations.
+
+**Single Command Deployment:**
+```bash
+# Start entire application stack
+docker-compose up -d
+
+# Result: Redis + Backend + Frontend + Networking + Volumes
+# All configured and connected automatically
+```
+
+### **Service Discovery in Action**
+
+**The Problem Without Orchestration:**
+```bash
+# Manual container management (painful)
+docker run -d --name redis redis:7-alpine
+docker run -d --name backend --link redis:redis -p 8000:8000 my-backend
+docker run -d --name frontend --link backend:backend -p 3000:80 my-frontend
+
+# Issues:
+# - Hard to manage dependencies
+# - Manual network configuration
+# - No automatic restart policies
+# - Difficult to scale
+```
+
+**The Solution With Docker Compose:**
+```yaml
+# docker-compose.yml (elegant)
+version: '3.8'
+services:
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - redis_data:/data
+    
+  backend:
+    build: ./backend
+    depends_on:
+      - redis
+    environment:
+      - REDIS_HOST=redis  # Service discovery magic!
+    
+  frontend:
+    build: ./frontend
+    depends_on:
+      - backend
+    ports:
+      - "3000:80"
+
+volumes:
+  redis_data:
+```
+
+### **Advanced Compose Patterns**
+
+**1. Environment-Specific Configurations**
+```yaml
+# docker-compose.yml (base)
+version: '3.8'
+services:
+  app:
+    build: .
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+
+# docker-compose.override.yml (development)
+version: '3.8'
+services:
+  app:
+    volumes:
+      - .:/app  # Live code reloading
+    command: npm run dev
+
+# docker-compose.prod.yml (production)
+version: '3.8'
+services:
+  app:
+    restart: unless-stopped
+    command: npm start
+```
+
+**Usage:**
+```bash
+# Development (uses override automatically)
+docker-compose up
+
+# Production
+docker-compose -f docker-compose.yml -f docker-compose.prod.yml up
+```
+
+**2. Health Check Dependencies**
+```yaml
+services:
+  database:
+    image: postgres:13
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  
+  backend:
+    build: ./backend
+    depends_on:
+      database:
+        condition: service_healthy  # Wait for DB to be ready
+```
+
+**3. Resource Constraints**
+```yaml
+services:
+  backend:
+    build: ./backend
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+```
+
+### **Compose Networking Deep Dive**
+
+**Default Network Behavior:**
+```bash
+# Docker Compose creates isolated network
+docker-compose up
+# Creates: projectname_default network
+
+# All services can communicate using service names
+# backend can reach redis using hostname "redis"
+# frontend can reach backend using hostname "backend"
+```
+
+**Custom Networks:**
+```yaml
+version: '3.8'
+services:
+  frontend:
+    networks:
+      - web-tier
+  
+  backend:
+    networks:
+      - web-tier
+      - data-tier
+  
+  database:
+    networks:
+      - data-tier
+
+networks:
+  web-tier:
+    driver: bridge
+  data-tier:
+    driver: bridge
+    internal: true  # No external access
+```
+
+### **Volume Management Strategies**
+
+**1. Data Persistence Patterns**
+```yaml
+# Named volumes (Docker managed)
+volumes:
+  postgres_data:    # Survives container recreation
+  redis_cache:      # Managed by Docker
+
+services:
+  database:
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+  
+  cache:
+    volumes:
+      - redis_cache:/data
+```
+
+**2. Development vs Production Volumes**
+```yaml
+# Development: Bind mounts for live editing
+services:
+  app:
+    volumes:
+      - ./src:/app/src:ro  # Read-only source mounting
+      - ./logs:/app/logs   # Writable log directory
+
+# Production: Named volumes for persistence
+services:
+  app:
+    volumes:
+      - app_data:/app/data
+      - app_logs:/app/logs
+```
+
+### **Compose Commands Mastery**
+
+**Essential Operations:**
+```bash
+# Start services in background
+docker-compose up -d
+
+# View real-time logs
+docker-compose logs -f
+
+# Scale specific services
+docker-compose up -d --scale backend=3
+
+# Execute commands in running services
+docker-compose exec backend python manage.py migrate
+
+# Restart specific service
+docker-compose restart frontend
+
+# Stop and remove everything
+docker-compose down --volumes --remove-orphans
+```
+
+**Debugging Commands:**
+```bash
+# Check service status
+docker-compose ps
+
+# View service configuration
+docker-compose config
+
+# Pull latest images
+docker-compose pull
+
+# Rebuild specific service
+docker-compose build backend
+docker-compose up -d backend
 ```
 
 ---

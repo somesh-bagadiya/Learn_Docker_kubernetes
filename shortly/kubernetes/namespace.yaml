@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: shortly
+  labels:
+    name: shortly
+    app: shortly-url-shortener
+    environment: production
+    managed-by: kubectl 
