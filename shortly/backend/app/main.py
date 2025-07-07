@@ -1,6 +1,8 @@
 import os
 import string
 import random
+import time
+import hashlib
 from typing import Optional
 from fastapi import FastAPI, HTTPException, Response
 from fastapi.middleware.cors import CORSMiddleware
@@ -206,4 +208,35 @@ def redirect_to_url(short_code: str):
     except Exception as e:
         if "not found" in str(e):
             raise
-        raise HTTPException(status_code=500, detail=f"Failed to retrieve URL: {str(e)}") 
+        raise HTTPException(status_code=500, detail=f"Failed to retrieve URL: {str(e)}")
+
+@app.get("/load-test")
+def cpu_intensive_endpoint():
+    """CPU-intensive endpoint for load testing HPA."""
+    start_time = time.time()
+    
+    # Perform CPU-intensive operations
+    result = 0
+    for i in range(100000):  # Increased iterations
+        # Complex mathematical operations
+        result += i ** 2
+        result = result % 1000000
+        
+        # String operations
+        text = f"load-test-{i}"
+        hash_value = hashlib.sha256(text.encode()).hexdigest()
+        
+        # More CPU work
+        if i % 1000 == 0:
+            temp_list = [x for x in range(100)]
+            temp_list.sort(reverse=True)
+    
+    end_time = time.time()
+    
+    return {
+        "message": "CPU-intensive operation completed",
+        "duration_seconds": round(end_time - start_time, 3),
+        "iterations": 100000,
+        "final_result": result,
+        "timestamp": int(time.time())
+    } 

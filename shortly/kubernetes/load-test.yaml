@@ -1,57 +1,130 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: load-test
+  name: aggressive-load-test
   namespace: shortly
   labels:
-    app: load-test
+    app: aggressive-load-test
 spec:
-  replicas: 3
+  replicas: 5  # Multiple pods for parallel load
   selector:
     matchLabels:
-      app: load-test
+      app: aggressive-load-test
   template:
     metadata:
       labels:
-        app: load-test
+        app: aggressive-load-test
     spec:
       containers:
       - name: load-generator
-        image: busybox
+        image: curlimages/curl:latest
         command: ["/bin/sh"]
         args:
         - -c
         - |
-          # Download curl
-          wget -O /tmp/curl https://github.com/moparisthebest/static-curl/releases/latest/download/curl-amd64
-          chmod +x /tmp/curl
+          echo "Starting aggressive load test..."
+          echo "Backend service: backend.shortly.svc.cluster.local:8000"
           
-          echo "Starting load test..."
+          # Function to generate load
+          generate_load() {
+            local endpoint=$1
+            local name=$2
+            echo "Testing $name endpoint..."
+            
+            while true; do
+              # Multiple parallel requests
+              for i in {1..10}; do
+                curl -s "http://backend.shortly.svc.cluster.local:8000$endpoint" > /dev/null &
+              done
+              wait  # Wait for all background jobs
+              sleep 0.1  # Short pause between batches
+            done
+          }
           
-          # Generate continuous load
-          while true; do
-            # Backend health endpoint
-            /tmp/curl -s http://backend.shortly.svc.cluster.local:8000/health >/dev/null 2>&1 &
-            
-            # Backend root endpoint  
-            /tmp/curl -s http://backend.shortly.svc.cluster.local:8000/ >/dev/null 2>&1 &
-            
-            # Frontend health endpoint
-            /tmp/curl -s http://frontend.shortly.svc.cluster.local/health >/dev/null 2>&1 &
-            
-            # Frontend root endpoint
-            /tmp/curl -s http://frontend.shortly.svc.cluster.local/ >/dev/null 2>&1 &
-            
-            # CPU intensive operation
-            dd if=/dev/zero of=/dev/null bs=1M count=10 >/dev/null 2>&1 &
-            
-            # Short sleep to prevent overwhelming
-            sleep 0.1
-          done
+          # Start multiple background load generators
+          generate_load "/load-test" "CPU-intensive" &
+          generate_load "/health" "Health" &
+          generate_load "/" "Root" &
+          
+          # Keep container running
+          wait
         resources:
           requests:
-            cpu: "100m"
-            memory: "64Mi"
+            cpu: 100m
+            memory: 64Mi
           limits:
-            cpu: "500m"
-            memory: "128Mi" 
+            cpu: 200m
+            memory: 128Mi
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: stress-test-pod
+  namespace: shortly
+  labels:
+    app: stress-test
+spec:
+  containers:
+  - name: stress-test
+    image: alpine:latest
+    command: ["/bin/sh"]
+    args:
+    - -c
+    - |
+      # Install curl
+      apk add --no-cache curl
+      
+      echo "Starting intensive stress test..."
+      
+      # Parallel stress testing
+      for worker in {1..20}; do
+        {
+          while true; do
+            # Hit CPU-intensive endpoint
+            curl -s http://backend.shortly.svc.cluster.local:8000/load-test
+            curl -s http://backend.shortly.svc.cluster.local:8000/health
+            curl -s http://backend.shortly.svc.cluster.local:8000/
+          done
+        } &
+      done
+      
+      # Keep pod running
+      wait
+  restartPolicy: Never
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: load-test-job
+  namespace: shortly
+spec:
+  parallelism: 10  # Run 10 pods in parallel
+  completions: 10
+  template:
+    spec:
+      containers:
+      - name: load-test
+        image: busybox:latest
+        command: ["/bin/sh"]
+        args:
+        - -c
+        - |
+          # Install wget (busybox has wget built-in)
+          echo "Starting load test worker..."
+          
+          # Continuous load for 10 minutes
+          end_time=$(($(date +%s) + 600))
+          
+          while [ $(date +%s) -lt $end_time ]; do
+            # Rapid fire requests
+            for i in $(seq 1 50); do
+              wget -q -O /dev/null http://backend.shortly.svc.cluster.local:8000/load-test &
+              wget -q -O /dev/null http://backend.shortly.svc.cluster.local:8000/health &
+            done
+            wait
+            sleep 0.1
+          done
+          
+          echo "Load test completed"
+      restartPolicy: Never
+  backoffLimit: 3 
